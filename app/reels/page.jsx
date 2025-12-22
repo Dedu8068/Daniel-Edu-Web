@@ -19,7 +19,7 @@ const VIDEOS = {
     "MAX STEEL.MP4",
     "EmojiManTears.MOV","HTPYR Reel 4.MOV","HTPYR Reel 3.MOV","HTPYR Reel 1.MOV",
   ],
-  clips: ["Dreamboy Insta.mp4", "Kill the Ego Final (_).mov"],
+  clips: ["Dreamboy Insta.mp4", ],
 };
 
 function PhoneVideoCard({ src, label = "Vertical Reel" }) {
