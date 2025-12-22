@@ -67,43 +67,60 @@ export default function ReelsPage() {
           </p>
         </header>
 
-        {/* Featured Reel */}
-        <section className="mb-12">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-2xl">
-            <div className="flex items-center justify-between gap-4 mb-4">
-              <h2 className="font-heading text-2xl md:text-3xl">
-                Featured Acting Reel
-              </h2>
-              <span className="text-xs md:text-sm text-gold border border-gold/30 bg-gold/10 px-3 py-1 rounded-full">
-                Casting-ready
-              </span>
-            </div>
+       {/* Featured Reel */}
+<section className="mb-12">
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-2xl">
+    <div className="flex items-center justify-between gap-4 mb-4">
+      <h2 className="font-heading text-2xl md:text-3xl">
+        Featured Acting Reel
+      </h2>
+      <span className="text-xs md:text-sm text-gold border border-gold/30 bg-gold/10 px-3 py-1 rounded-full">
+        Casting-ready
+      </span>
+    </div>
 
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
-              <video controls playsInline preload="metadata" className="w-full h-auto">
-                <source
-                  src={encodeURI("/reels/acting/Acting Demo Reel.mp4")}
-                  type="video/mp4"
-                />
-              </video>
-            </div>
+    {/* YouTube embed (fast + no huge repo files) */}
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
+      <div className="relative w-full aspect-video">
+        <iframe
+          className="absolute inset-0 h-full w-full"
+          src="https://www.youtube.com/embed/bNLD1AnwjnE"
+          title="Daniel Ikechukwu Edu Acting Reel"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      </div>
+    </div>
 
-            <div className="mt-4 flex flex-wrap gap-3">
-              <a
-                href="/contact"
-                className="rounded-xl bg-gold px-6 py-3 font-semibold text-black hover:bg-softgold transition"
-              >
-                Book / Contact
-              </a>
-              <a
-                href="/portfolio"
-                className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white hover:bg-white/10 transition"
-              >
-                View Photos
-              </a>
-            </div>
-          </div>
-        </section>
+    {/* Optional: clean link under video */}
+    <div className="mt-3 text-sm text-white/60">
+      <a
+        href="https://youtu.be/bNLD1AnwjnE"
+        target="_blank"
+        rel="noreferrer"
+        className="text-gold font-semibold hover:underline"
+      >
+        Watch on YouTube →
+      </a>
+    </div>
+
+    <div className="mt-4 flex flex-wrap gap-3">
+      <a
+        href="/contact"
+        className="rounded-xl bg-gold px-6 py-3 font-semibold text-black hover:bg-softgold transition"
+      >
+        Book / Contact
+      </a>
+      <a
+        href="/portfolio"
+        className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white hover:bg-white/10 transition"
+      >
+        View Photos
+      </a>
+    </div>
+  </div>
+</section>
+
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-3 mb-6">
