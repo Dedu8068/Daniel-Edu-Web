@@ -10,21 +10,42 @@ const SECTIONS = [
   { key: "clips", label: "Clips" },
 ];
 
-// ✅ Your updated filenames
-const VIDEOS = {
-  acting: ["Acting Demo Reel.mp4"],
-  monologues: ["Fresh Prince Monologue 1.mp4"],
+// Local files that live in /public/reels/<section>/
+const LOCAL_VIDEOS: Record<string, string[]> = {
+  acting: [], // using YouTube featured reel instead
+  monologues: [], // YouTube-only for now
   scenes: ["Trevor_LakehouseM_DanielEdu.mov"],
   vertical: [
     "MAX STEEL.MP4",
-    "EmojiManTears.MOV","HTPYR Reel 4.MOV","HTPYR Reel 3.MOV","HTPYR Reel 1.MOV",
+    "EmojiManTears.MOV",
+    "HTPYR Reel 4.MOV",
+    "HTPYR Reel 3.MOV",
+    "HTPYR Reel 1.MOV",
   ],
-  clips: ["Dreamboy Insta.mp4", ],
+  clips: ["Dreamboy Insta.mp4"],
 };
 
-function PhoneVideoCard({ src, label = "Vertical Reel" }) {
+// YouTube-based videos per section
+// To add more later, just add { id, title } objects here.
+const YOUTUBE_VIDEOS: Record<
+  string,
+  { id: string; title: string }[]
+> = {
+  monologues: [
+    {
+      id: "KvVS2fSQRRI",
+      title: "Fresh Prince Monologue",
+    },
+  ],
+  // acting: [{ id: "...", title: "..." }], // you can add more later
+  // scenes: [],
+  // vertical: [],
+  // clips: [],
+};
+
+function PhoneVideoCard({ src, label = "Vertical Reel" }: { src: string; label?: string }) {
   return (
-   <div className="snap-center shrink-0 px-3 md:px-0">
+    <div className="snap-center shrink-0 px-3 md:px-0">
       {/* “Phone” size on desktop */}
       <div className="mx-auto w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px]">
         <div className="relative aspect-[9/16] overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
@@ -39,7 +60,6 @@ function PhoneVideoCard({ src, label = "Vertical Reel" }) {
             className="absolute inset-0 h-full w-full object-cover"
           >
             <source src={src} />
-
             Your browser does not support the video tag.
           </video>
         </div>
@@ -48,9 +68,65 @@ function PhoneVideoCard({ src, label = "Vertical Reel" }) {
   );
 }
 
+function LocalVideoCard({ src, file }: { src: string; file: string }) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-xl hover:border-gold/40 transition">
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
+        <video controls playsInline preload="metadata" className="w-full">
+          <source src={src} />
+        </video>
+      </div>
+
+      <div className="mt-3 text-sm text-white/70 break-all">{file}</div>
+    </div>
+  );
+}
+
+function YouTubeCard({ id, title }: { id: string; title: string }) {
+  const embedUrl = `https://www.youtube.com/embed/${id}`;
+  const watchUrl = `https://youtu.be/${id}`;
+
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-xl">
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
+        <div className="relative w-full aspect-video">
+          <iframe
+            className="absolute inset-0 h-full w-full"
+            src={embedUrl}
+            title={title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-4">
+        <div className="text-sm text-white/80">{title}</div>
+        <a
+          href={watchUrl}
+          className="text-xs text-gold font-semibold hover:underline"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Watch on YouTube →
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function ReelsPage() {
   const [active, setActive] = useState("acting");
-  const activeVideos = useMemo(() => VIDEOS[active] ?? [], [active]);
+
+  const activeLocal = useMemo(
+    () => LOCAL_VIDEOS[active] ?? [],
+    [active]
+  );
+  const activeYouTube = useMemo(
+    () => YOUTUBE_VIDEOS[active] ?? [],
+    [active]
+  );
+
+  const hasContent = activeLocal.length > 0 || activeYouTube.length > 0;
 
   return (
     <main className="min-h-screen bg-royal text-white">
@@ -58,69 +134,66 @@ export default function ReelsPage() {
         {/* Header */}
         <header className="mb-8">
           <h1 className="font-heading text-4xl md:text-5xl font-bold">
-  Daniel Ikechukwu Edu — Reels
-</h1>
+            Daniel Ikechukwu Edu — Reels
+          </h1>
 
           <p className="mt-3 text-white/70 max-w-2xl">
-            Featured acting reel + scenes, monologues, vertical reels, and clips.
-            Updated regularly.
+            Featured acting reel plus scenes, monologues, vertical reels, and clips.
+            Actively updating with new work.
           </p>
         </header>
 
-       {/* Featured Reel */}
-<section className="mb-12">
-  <div className="rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-2xl">
-    <div className="flex items-center justify-between gap-4 mb-4">
-      <h2 className="font-heading text-2xl md:text-3xl">
-        Featured Acting Reel
-      </h2>
-      <span className="text-xs md:text-sm text-gold border border-gold/30 bg-gold/10 px-3 py-1 rounded-full">
-        Casting-ready
-      </span>
-    </div>
+        {/* Featured Acting Reel (YouTube embed) */}
+        <section className="mb-12">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-2xl">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h2 className="font-heading text-2xl md:text-3xl">
+                Featured Acting Reel
+              </h2>
+              <span className="text-xs md:text-sm text-gold border border-gold/30 bg-gold/10 px-3 py-1 rounded-full">
+                Casting-ready
+              </span>
+            </div>
 
-    {/* YouTube embed (fast + no huge repo files) */}
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
-      <div className="relative w-full aspect-video">
-        <iframe
-          className="absolute inset-0 h-full w-full"
-          src="https://www.youtube.com/embed/bNLD1AnwjnE"
-          title="Daniel Ikechukwu Edu Acting Reel"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
-      </div>
-    </div>
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
+              <div className="relative w-full aspect-video">
+                <iframe
+                  className="absolute inset-0 h-full w-full"
+                  src="https://www.youtube.com/embed/bNLD1AnwjnE"
+                  title="Daniel Ikechukwu Edu Acting Reel"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            </div>
 
-    {/* Optional: clean link under video */}
-    <div className="mt-3 text-sm text-white/60">
-      <a
-        href="https://youtu.be/bNLD1AnwjnE"
-        target="_blank"
-        rel="noreferrer"
-        className="text-gold font-semibold hover:underline"
-      >
-        Watch on YouTube →
-      </a>
-    </div>
+            <div className="mt-3 text-sm text-white/60">
+              <a
+                href="https://youtu.be/bNLD1AnwjnE"
+                target="_blank"
+                rel="noreferrer"
+                className="text-gold font-semibold hover:underline"
+              >
+                Watch on YouTube →
+              </a>
+            </div>
 
-    <div className="mt-4 flex flex-wrap gap-3">
-      <a
-        href="/contact"
-        className="rounded-xl bg-gold px-6 py-3 font-semibold text-black hover:bg-softgold transition"
-      >
-        Book / Contact
-      </a>
-      <a
-        href="/portfolio"
-        className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white hover:bg-white/10 transition"
-      >
-        View Photos
-      </a>
-    </div>
-  </div>
-</section>
-
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a
+                href="/contact"
+                className="rounded-xl bg-gold px-6 py-3 font-semibold text-black hover:bg-softgold transition"
+              >
+                Book / Contact
+              </a>
+              <a
+                href="/portfolio"
+                className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white hover:bg-white/10 transition"
+              >
+                View Photos
+              </a>
+            </div>
+          </div>
+        </section>
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-3 mb-6">
@@ -144,88 +217,73 @@ export default function ReelsPage() {
         </div>
 
         {/* Content */}
-        {activeVideos.length === 0 ? (
+        {!hasContent ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-white/70">
-            No videos in this section yet. Add files to{" "}
-            <span className="text-gold font-semibold">
-              /public/reels/{active}/
-            </span>{" "}
-            and list them in the <span className="text-white">VIDEOS</span> array.
+            <h3 className="font-heading text-2xl mb-2">
+              Actively updating this section
+            </h3>
+            <p className="max-w-2xl">
+              New {active} material is coming soon. Check back for fresh scenes,
+              monologues, and selects.
+            </p>
           </div>
         ) : active === "vertical" ? (
-  <div className="rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-xl">
-    <div className="flex items-center justify-between gap-4 mb-4">
-      <h3 className="font-heading text-2xl">Vertical Reels</h3>
-      <span className="text-xs text-white/70">
-        Mobile = swipe • Desktop = grid
-      </span>
-    </div>
+          // Special layout for vertical (phone-style) reels
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-5 md:p-6 shadow-xl">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h3 className="font-heading text-2xl">Vertical Reels</h3>
+              <span className="text-xs text-white/70">
+                Mobile = swipe • Desktop = grid
+              </span>
+            </div>
 
-    {/* MOBILE: scroll-snap carousel */}
-    <div
-      className="
-        no-scrollbar
-        flex overflow-x-auto snap-x snap-mandatory
-        scroll-smooth
-        pb-4
-        px-1
-        md:hidden
-      "
-      style={{
-        WebkitOverflowScrolling: "touch",
-        scrollPaddingLeft: "24px",
-        scrollPaddingRight: "24px",
-      }}
-    >
-      {activeVideos.map((file) => {
-        const src = encodeURI(`/reels/vertical/${file}`);
-        return <PhoneVideoCard key={src} src={src} />;
-      })}
-    </div>
+            {/* MOBILE: scroll-snap carousel */}
+            <div
+              className="
+                no-scrollbar
+                flex overflow-x-auto snap-x snap-mandatory
+                scroll-smooth
+                pb-4
+                px-1
+                md:hidden
+              "
+              style={{
+                WebkitOverflowScrolling: "touch",
+                scrollPaddingLeft: "24px",
+                scrollPaddingRight: "24px",
+              }}
+            >
+              {activeLocal.map((file) => {
+                const src = encodeURI(`/reels/vertical/${file}`);
+                return <PhoneVideoCard key={src} src={src} />;
+              })}
+            </div>
 
-    {/* DESKTOP: wrapped grid (no horizontal scrolling) */}
-    <div className="hidden md:grid gap-8 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
-      {activeVideos.map((file) => {
-        const src = encodeURI(`/reels/vertical/${file}`);
-        return (
-          <div key={src} className="w-full max-w-[340px]">
-            {/* Reuse PhoneVideoCard sizing/style */}
-            <PhoneVideoCard src={src} />
-            <div className="mt-2 text-sm text-white/60 break-all px-3">
-              {file}
+            {/* DESKTOP: wrapped grid */}
+            <div className="hidden md:grid gap-8 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
+              {activeLocal.map((file) => {
+                const src = encodeURI(`/reels/vertical/${file}`);
+                return (
+                  <div key={src} className="w-full max-w-[340px]">
+                    <PhoneVideoCard src={src} />
+                    <div className="mt-2 text-sm text-white/60 break-all px-3">
+                      {file}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        );
-      })}
-    </div>
-
-    <div className="mt-3 text-sm text-white/60">
-      Tip: On desktop, you can click any video directly. On mobile, swipe through
-      the carousel.
-    </div>
-  </div>
-) : (
-
+        ) : (
+          // All other sections: YouTube + local grid
           <div className="grid gap-6 md:grid-cols-2">
-            {activeVideos.map((file) => {
+            {activeYouTube.map((yt) => (
+              <YouTubeCard key={yt.id} id={yt.id} title={yt.title} />
+            ))}
+
+            {activeLocal.map((file) => {
               const src = encodeURI(`/reels/${active}/${file}`);
-              return (
-                <div
-                  key={src}
-                  className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-xl hover:border-gold/40 transition"
-                >
-                  <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
-                    <video controls playsInline preload="metadata" className="w-full">
-                      <source src={src} />
-
-                    </video>
-                  </div>
-
-                  <div className="mt-3 text-sm text-white/70 break-all">
-                    {file}
-                  </div>
-                </div>
-              );
+              return <LocalVideoCard key={src} src={src} file={file} />;
             })}
           </div>
         )}
