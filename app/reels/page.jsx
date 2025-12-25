@@ -11,39 +11,49 @@ const SECTIONS = [
 ];
 
 // Local files that live in /public/reels/<section>/
-const LOCAL_VIDEOS: Record<string, string[]> = {
+const LOCAL_VIDEOS = {
   acting: [], // using YouTube featured reel instead
   monologues: [], // YouTube-only for now
   scenes: ["Trevor_LakehouseM_DanielEdu.mov"],
   vertical: [
-    "MAX STEEL.MP4",
-    "EmojiManTears.MOV",
-    "HTPYR Reel 4.MOV",
-    "HTPYR Reel 3.MOV",
-    "HTPYR Reel 1.MOV",
+    "max steel.MP4", // keep this one local
   ],
   clips: ["Dreamboy Insta.mp4"],
 };
 
 // YouTube-based videos per section
 // To add more later, just add { id, title } objects here.
-const YOUTUBE_VIDEOS: Record<
-  string,
-  { id: string; title: string }[]
-> = {
+const YOUTUBE_VIDEOS = {
   monologues: [
     {
       id: "KvVS2fSQRRI",
       title: "Fresh Prince Monologue",
     },
   ],
-  // acting: [{ id: "...", title: "..." }], // you can add more later
-  // scenes: [],
-  // vertical: [],
-  // clips: [],
+  vertical: [
+    {
+      id: "TnlXLhkGD2E",
+      title: "HTPYR End Clip",
+    },
+    {
+      id: "WsO6iX96_6o",
+      title: "HTPYR Reel 3",
+    },
+    {
+      id: "jPMgxQ92JCY",
+      title: "HTPYR Reel 1",
+    },
+    {
+      id: "nOJxRONItzY",
+      title: "Emoji Man Tears",
+    },
+  ],
+  acting: [], // you can add acting YouTube clips later if you want
+  scenes: [],
+  clips: [],
 };
 
-function PhoneVideoCard({ src, label = "Vertical Reel" }: { src: string; label?: string }) {
+function PhoneVideoCard({ src, label = "Vertical Reel" }) {
   return (
     <div className="snap-center shrink-0 px-3 md:px-0">
       {/* “Phone” size on desktop */}
@@ -68,7 +78,7 @@ function PhoneVideoCard({ src, label = "Vertical Reel" }: { src: string; label?:
   );
 }
 
-function LocalVideoCard({ src, file }: { src: string; file: string }) {
+function LocalVideoCard({ src, file }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-xl hover:border-gold/40 transition">
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
@@ -82,7 +92,7 @@ function LocalVideoCard({ src, file }: { src: string; file: string }) {
   );
 }
 
-function YouTubeCard({ id, title }: { id: string; title: string }) {
+function YouTubeCard({ id, title }) {
   const embedUrl = `https://www.youtube.com/embed/${id}`;
   const watchUrl = `https://youtu.be/${id}`;
 
@@ -237,7 +247,7 @@ export default function ReelsPage() {
               </span>
             </div>
 
-            {/* MOBILE: scroll-snap carousel */}
+            {/* MOBILE: scroll-snap carousel for local vertical files */}
             <div
               className="
                 no-scrollbar
@@ -259,8 +269,8 @@ export default function ReelsPage() {
               })}
             </div>
 
-            {/* DESKTOP: wrapped grid */}
-            <div className="hidden md:grid gap-8 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
+            {/* DESKTOP: wrapped grid for local vertical files */}
+            <div className="hidden md:grid gap-8 md:grid-cols-2 lg:grid-cols-3 justify-items-center mb-8">
               {activeLocal.map((file) => {
                 const src = encodeURI(`/reels/vertical/${file}`);
                 return (
@@ -273,6 +283,15 @@ export default function ReelsPage() {
                 );
               })}
             </div>
+
+            {/* YouTube vertical clips (HTPYR + Emoji Man Tears) */}
+            {activeYouTube.length > 0 && (
+              <div className="grid gap-6 md:grid-cols-2">
+                {activeYouTube.map((yt) => (
+                  <YouTubeCard key={yt.id} id={yt.id} title={yt.title} />
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           // All other sections: YouTube + local grid
