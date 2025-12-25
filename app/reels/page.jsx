@@ -11,14 +11,13 @@ const SECTIONS = [
 ];
 
 // Local files that live in /public/reels/<section>/
+// Keeping these empty so we don't ship large media blobs with the repo.
 const LOCAL_VIDEOS = {
   acting: [], // using YouTube featured reel instead
   monologues: [], // YouTube-only for now
-  scenes: ["Trevor_LakehouseM_DanielEdu.mov"],
-  vertical: [
-    "max steel.MP4", // keep this one local
-  ],
-  clips: ["Dreamboy Insta.mp4"],
+  scenes: [],
+  vertical: [],
+  clips: [],
 };
 
 // YouTube-based videos per section
