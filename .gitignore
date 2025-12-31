@@ -49,3 +49,4 @@ public/voiceover/**
 *.mp4
 *.mov
 *.m4v
+.env*.local

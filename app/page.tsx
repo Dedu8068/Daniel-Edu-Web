@@ -21,7 +21,7 @@ export default function Home() {
                 Los Angeles • Available for Commercial / Theatrical / VO / Print /UGC
               </div>
 
-              <h1 className="text-6xl font-heading font-bold mb-4">
+              <h1 className="text-6xl md:text-7xl lg:text-8xl font-heading font-bold mb-4 leading-tight">
   Daniel Ikechukwu Edu
 </h1>
 <p className="text-sm text-white/60 mt-2">
@@ -116,6 +116,47 @@ export default function Home() {
                   <span>Headshots • Editorial • Commercial</span>
                   <span className="text-gold">Scroll for more ↓</span>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Resume + additional headshot */}
+          <div className="mt-12 rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 shadow-2xl">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+              <div>
+                <h2 className="font-heading text-3xl md:text-4xl font-bold">
+                  Acting Resume & Headshot
+                </h2>
+                <p className="text-white/70 mt-2">
+                  Scroll to view the full resume and a portrait headshot — ready for casting.
+                </p>
+              </div>
+              <a
+                href="/acting-resume.png"
+                className="inline-flex items-center justify-center rounded-xl border border-gold/40 bg-gold/10 px-4 py-2 text-gold font-semibold text-sm hover:bg-gold/15"
+                download
+              >
+                Download Resume
+              </a>
+            </div>
+
+            <div className="flex flex-col gap-8">
+              <div className="rounded-2xl border border-white/10 bg-black/60 p-4 md:p-6 shadow-xl">
+                <div className="overflow-auto rounded-xl bg-white/5 max-h-[75vh]">
+                  <img
+                    src="/acting-resume.png"
+                    alt="Daniel Edu acting resume"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-black/60 p-4 md:p-6 shadow-xl flex items-center justify-center">
+                <img
+                  src="/headshot-portrait.png"
+                  alt="Daniel Edu portrait headshot"
+                  className="w-full h-full max-h-[95vh] object-contain rounded-xl"
+                />
               </div>
             </div>
           </div>
