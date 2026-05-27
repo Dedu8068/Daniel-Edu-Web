@@ -23,12 +23,12 @@ const VO_FILES = {
   singing: ["One two three….m4a"],
 };
 
-// Put singing videos in: /public/voiceover/singing/videos/
+// Put singing videos in: /public/voiceover/singing/video/
 // Add YouTube links below to embed previews.
 const SINGING_VIDEOS = [
   { type: "youtube", title: "Guns avnd Ships", url: "https://youtu.be/5Uf77DAChys" },
   { type: "youtube", title: "Doctor, My Eyes", url: "https://youtube.com/shorts/-MoaUqM3bhc" },
-  { type: "youtube", title: "thinkin bout you cover", url: "https://youtube.com/shorts/IkhTVhfKrnc?si=s9uBrmTG4YLWTm0p" },
+  { type: "file", title: "Thinkin bout you- Daniel Edu cover", file: "ThinkinboutyoucoverDanielEdu.mov" },
   // { type: "file", title: "Performance", file: "Live_Performance.mp4" },
 ];
 
@@ -433,7 +433,7 @@ export default function VoiceOverPage() {
                 );
               }
 
-              const src = `/voiceover/singing/videos/${video.file}`;
+              const src = `/voiceover/singing/video/${video.file}`;
               return (
                 <VideoCard
                   key={`${video.file}-${index}`}
