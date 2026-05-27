@@ -18,10 +18,19 @@ const FEATURED_REEL_FILE = ""; // e.g. "VO_Reel.mp3" or "VO_Reel.m4a" or "VO_Ree
 
 // Put your samples in: /public/voiceover/<category>/
 const VO_FILES = {
-  commercial: [],
-  animation: [],
+  commercial: ["Commercial voice over trackmp3.mp3"],
+  animation: ["RokelVO.mp3"],
   singing: ["One two three….m4a"],
 };
+
+// Put singing videos in: /public/voiceover/singing/videos/
+// Add YouTube links below to embed previews.
+const SINGING_VIDEOS = [
+  { type: "youtube", title: "Guns avnd Ships", url: "https://youtu.be/5Uf77DAChys" },
+  { type: "youtube", title: "Doctor, My Eyes", url: "https://youtube.com/shorts/-MoaUqM3bhc" },
+  { type: "youtube", title: "thinkin bout you cover", url: "https://youtube.com/shorts/IkhTVhfKrnc?si=s9uBrmTG4YLWTm0p" },
+  // { type: "file", title: "Performance", file: "Live_Performance.mp4" },
+];
 
 
 /** -----------------------------
@@ -54,6 +63,31 @@ function GoldWaveform() {
       ))}
     </div>
   );
+}
+
+function getYouTubeEmbed(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace("www.", "");
+    let id = "";
+
+    if (host === "youtu.be") {
+      id = u.pathname.slice(1);
+    } else if (host === "youtube.com" || host === "m.youtube.com") {
+      if (u.pathname.startsWith("/embed/")) {
+        id = u.pathname.replace("/embed/", "");
+      } else if (u.pathname.startsWith("/shorts/")) {
+        id = u.pathname.replace("/shorts/", "");
+      } else if (u.searchParams.get("v")) {
+        id = u.searchParams.get("v");
+      }
+    }
+
+    return id ? `https://www.youtube.com/embed/${id}?rel=0` : null;
+  } catch {
+    return null;
+  }
 }
 
 /** -----------------------------
@@ -115,12 +149,67 @@ function AudioCard({ title, src, filename }) {
   );
 }
 
+function VideoCard({ title, kind, src, filename, youtubeUrl }) {
+  const embedSrc = kind === "youtube" ? getYouTubeEmbed(youtubeUrl) : null;
+
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-xl hover:border-gold/40 transition">
+      <div className="flex items-start justify-between gap-4 mb-3">
+        <div className="min-w-0">
+          <div className="font-semibold">{title}</div>
+          {filename ? (
+            <div className="text-sm text-white/60 break-all">{filename}</div>
+          ) : null}
+          {youtubeUrl ? (
+            <div className="text-sm text-white/60 break-all">{youtubeUrl}</div>
+          ) : null}
+        </div>
+
+        <span className="shrink-0 text-xs text-gold/90 border border-gold/25 bg-gold/10 px-3 py-1 rounded-full">
+          {kind === "youtube" ? "YouTube" : "MP4"}
+        </span>
+      </div>
+
+      <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+        {kind === "youtube" ? (
+          embedSrc ? (
+            <div className="aspect-video w-full overflow-hidden rounded-xl border border-white/10">
+              <iframe
+                src={embedSrc}
+                title={title}
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            <a
+              href={youtubeUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm text-gold hover:underline"
+            >
+              Open YouTube link
+            </a>
+          )
+        ) : (
+          <video controls preload="metadata" className="w-full rounded-xl">
+            <source src={src} />
+            Your browser does not support the video element.
+          </video>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /** -----------------------------
  *  Page
  * ------------------------------ */
 
 export default function VoiceOverPage() {
   const [active, setActive] = useState("commercial");
+  const [singingMode, setSingingMode] = useState("audio");
 
   // ✅ Define featuredSrc BEFORE any effect uses it
   const featuredSrc = FEATURED_REEL_FILE
@@ -145,6 +234,9 @@ export default function VoiceOverPage() {
   }, [featuredSrc]);
 
   const files = useMemo(() => VO_FILES[active] ?? [], [active]);
+  const isSinging = active === "singing";
+  const singingAudioFiles = VO_FILES.singing ?? [];
+  const singingVideos = SINGING_VIDEOS ?? [];
 
   return (
     <main className="min-h-screen bg-royal text-white">
@@ -195,25 +287,11 @@ export default function VoiceOverPage() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-6 text-white/70">
-                No featured reel uploaded yet. When you’re ready:
-                <div className="mt-3 text-sm">
-                  1) Add your file to{" "}
-                  <span className="text-gold font-semibold">
-                    /public/voiceover/reel/
-                  </span>
-                  <br />
-                  2) Set{" "}
-                  <span className="text-white font-semibold">
-                    FEATURED_REEL_FILE
-                  </span>{" "}
-                  at the top of this page
-                </div>
-
-                <div className="mt-4 text-sm text-white/60">
-                  Recommended formats: <span className="text-white">.mp3</span>{" "}
-                  or <span className="text-white">.m4a</span> (mp4 works too).
-                </div>
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-6 text-white/80">
+                <h3 className="font-heading text-xl mb-2">Coming soon!!</h3>
+                <p className="text-white/70">
+                  A featured VO reel will be available here shortly.
+                </p>
               </div>
             )}
 
@@ -228,7 +306,7 @@ export default function VoiceOverPage() {
                 href="/reels"
                 className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white hover:bg-white/10 transition"
               >
-                Acting Reels
+                Voiceover
               </a>
             </div>
           </div>
@@ -255,62 +333,114 @@ export default function VoiceOverPage() {
           })}
         </div>
 
-        {/* Audio grid */}
-        {files.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-10">
-            <h3 className="font-heading text-2xl mb-2">
-              No {active} samples yet
-            </h3>
-            <p className="text-white/70 max-w-2xl">
-              Add audio/video files to{" "}
-              <span className="text-gold font-semibold">
-                /public/voiceover/{active}/
-              </span>{" "}
-              and list their filenames in the{" "}
-              <span className="text-white">VO_FILES</span> array at the top of
-              this page.
-            </p>
+        {/* Singing sub-tabs */}
+        {isSinging ? (
+          <div className="flex flex-wrap gap-3 mb-6">
+            {["audio", "video"].map((mode) => {
+              const isActive = mode === singingMode;
+              return (
+                <button
+                  key={mode}
+                  onClick={() => setSingingMode(mode)}
+                  className={[
+                    "rounded-full px-5 py-2 text-sm font-semibold transition border",
+                    isActive
+                      ? "bg-gold text-black border-gold"
+                      : "bg-white/5 text-white border-white/15 hover:border-gold/40 hover:bg-white/10",
+                  ].join(" ")}
+                >
+                  {mode === "audio" ? "Audio" : "Video"}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
 
-            <div className="mt-6 grid md:grid-cols-2 gap-4 text-sm text-white/70">
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-                <div className="text-white font-semibold mb-2">Naming tip</div>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>VO_Commercial_01.mp3</li>
-                  <li>VO_Animation_Character_01.m4a</li>
-                  <li>VO_Commercial_02.mp4</li>
-                </ul>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-                <div className="text-white font-semibold mb-2">
-                  Fast add steps
-                </div>
-                <ol className="list-decimal list-inside space-y-1">
-                  <li>Drop file into the folder</li>
-                  <li>Add filename to VO_FILES</li>
-                  <li>Refresh the page</li>
-                </ol>
-              </div>
+        {/* Samples grid */}
+        {!isSinging ? (
+          files.length === 0 ? (
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-10 text-white/80">
+              <h3 className="font-heading text-2xl mb-2">Updating soon</h3>
+              <p className="max-w-2xl text-white/70">
+                New {CATEGORIES.find((c) => c.key === active)?.label.toLowerCase()} samples are on the way. Check back shortly.
+              </p>
             </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2">
+              {files.map((file) => {
+                const src = `/voiceover/${active}/${file}`;
+                const niceTitle =
+                  active === "commercial"
+                    ? "Commercial Sample"
+                    : active === "animation"
+                    ? file === "RokelVO.mp3"
+                      ? "Calm Villian VO Sample"
+                      : "Animation Sample"
+                    : "Singing Sample";
+
+                return (
+                  <AudioCard
+                    key={src}
+                    title={niceTitle}
+                    src={src}
+                    filename={file}
+                  />
+                );
+              })}
+            </div>
+          )
+        ) : singingMode === "audio" ? (
+          singingAudioFiles.length === 0 ? (
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-10 text-white/80">
+              <h3 className="font-heading text-2xl mb-2">Updating soon</h3>
+              <p className="max-w-2xl text-white/70">
+                New singing audio samples are on the way. Check back shortly.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2">
+              {singingAudioFiles.map((file) => {
+                const src = `/voiceover/singing/${file}`;
+                return (
+                  <AudioCard
+                    key={src}
+                    title="Singing Sample"
+                    src={src}
+                    filename={file}
+                  />
+                );
+              })}
+            </div>
+          )
+        ) : singingVideos.length === 0 ? (
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-10 text-white/80">
+            <h3 className="font-heading text-2xl mb-2">Updating soon</h3>
+            <p className="max-w-2xl text-white/70">
+              New singing videos are on the way. Check back shortly.
+            </p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
-            {files.map((file) => {
-              const src = `/voiceover/${active}/${file}`;
-              const niceTitle =
-  active === "commercial"
-    ? "Commercial Sample"
-    : active === "animation"
-    ? "Animation Sample"
-    : "Singing Sample";
+            {singingVideos.map((video, index) => {
+              if (video.type === "youtube") {
+                return (
+                  <VideoCard
+                    key={`${video.url}-${index}`}
+                    title={video.title || "Singing Video"}
+                    kind="youtube"
+                    youtubeUrl={video.url}
+                  />
+                );
+              }
 
-
+              const src = `/voiceover/singing/videos/${video.file}`;
               return (
-                <AudioCard
-                  key={src}
-                  title={niceTitle}
+                <VideoCard
+                  key={`${video.file}-${index}`}
+                  title={video.title || "Singing Video"}
+                  kind="file"
                   src={src}
-                  filename={file}
+                  filename={video.file}
                 />
               );
             })}
